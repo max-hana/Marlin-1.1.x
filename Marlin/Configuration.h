@@ -504,11 +504,13 @@
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
 #define X_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
 #define Y_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
+//#define Z_MIN_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING false // BLTOUCH // set to true to invert the logic of the endstop.
 #define X_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
 #define Y_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
 #define Z_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
-#define Z_MIN_PROBE_ENDSTOP_INVERTING true // set to true to invert the logic of the probe.
+// for inductance sensor // #define Z_MIN_PROBE_ENDSTOP_INVERTING true // set to true to invert the logic of the probe.
+#define Z_MIN_PROBE_ENDSTOP_INVERTING false // for BLTOUCH // set to true to invert the logic of the probe.
 
 // Enable this feature if all enabled endstop pins are interrupt-capable.
 // This will remove the need to poll the interrupt pins, saving many CPU cycles.
@@ -552,6 +554,7 @@
  */
 // #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
 #define DEFAULT_MAX_FEEDRATE {120,120,3,25} // (mm/sec) CL: default for _my_ HIC i3 max feedrate rated at ~120mm/sec
+//#define DEFAULT_MAX_FEEDRATE {2,2,3,25} // (mm/sec) CL: trying
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -559,7 +562,8 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+//#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+#define DEFAULT_MAX_ACCELERATION      { 1200, 1200, 100, 10000 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -642,7 +646,7 @@
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
  *   (e.g., an inductive probe or a nozzle-based probe-switch.)
  */
-#define FIX_MOUNTED_PROBE
+//#define FIX_MOUNTED_PROBE
 
 /**
  * Z Servo Probe, such as an endstop switch on a rotating arm.
@@ -653,8 +657,10 @@
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-//#define BLTOUCH
+#define BLTOUCH
+#define SERVO0_PIN 12 // Hictop's MPX is D12
 #if ENABLED(BLTOUCH)
+  //#define BLTOUCH_DELAY 375   // (ms) Enable and increase if needed
   //#define BLTOUCH_DELAY 375   // (ms) Enable and increase if needed
 #endif
 
@@ -665,8 +671,8 @@
  * in current flowing through the wires).  This is likely most useful to users of the
  * BLTouch probe, but may also help those with inductive or other probe types.
  */
-//#define PROBING_HEATERS_OFF       // Turn heaters off when probing
-//#define PROBING_FANS_OFF          // Turn fans off when probing
+#define PROBING_HEATERS_OFF       // Turn heaters off when probing
+#define PROBING_FANS_OFF          // Turn fans off when probing
 
 // A probe that is deployed and stowed with a solenoid pin (SOL1_PIN)
 //#define SOLENOID_PROBE
@@ -704,12 +710,13 @@
   #define X_PROBE_OFFSET_FROM_EXTRUDER 9   // CL: HICi3, was =10 : X offset: -left  [of the nozzle] +right
   #define Y_PROBE_OFFSET_FROM_EXTRUDER 57  // CL: HICi3, was =10 : Y offset: -front [of the nozzle] +behind
 //  #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.2   // Z offset: -below [the nozzle] (always negative!)
-  #define Z_PROBE_OFFSET_FROM_EXTRUDER (-0.0)   // Z offset: -below [the nozzle] (always negative!)
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER (-2.0)   // Z offset: -below [the nozzle] (always negative!)
 
 
 // X and Y axis travel speed (mm/m) between probes
 //#define XY_PROBE_SPEED 8000
 #define XY_PROBE_SPEED 1200
+
 
 // Speed for the first approach when double-probing (with PROBE_DOUBLE_TOUCH)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
@@ -734,8 +741,10 @@
  * Example: `M851 Z-5` with a CLEARANCE of 4  =>  9mm from bed to nozzle.
  *     But: `M851 Z+1` with a CLEARANCE of 2  =>  2mm from bed to nozzle.
  */
-#define Z_CLEARANCE_DEPLOY_PROBE   10 // Z Clearance for Deploy/Stow
-#define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
+//#define Z_CLEARANCE_DEPLOY_PROBE   10 //  Z Clearance for Deploy/Stow
+//#define Z_CLEARANCE_BETWEEN_PROBES  5 // Z Clearance between probe points
+#define Z_CLEARANCE_DEPLOY_PROBE   15 // for BLTOUCH >=15 // 10 //  Z Clearance for Deploy/Stow
+#define Z_CLEARANCE_BETWEEN_PROBES  10// for BLTOUCH >=10 // 5 // Z Clearance between probe points
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -867,8 +876,8 @@
  *   With an LCD controller the process is guided step-by-step.
  */
 //#define AUTO_BED_LEVELING_3POINT
-#define AUTO_BED_LEVELING_LINEAR
-//#define AUTO_BED_LEVELING_BILINEAR
+//#define AUTO_BED_LEVELING_LINEAR
+#define AUTO_BED_LEVELING_BILINEAR
 //#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
@@ -1623,6 +1632,7 @@
 // If unsure, leave commented / disabled
 //
 //#define NUM_SERVOS 3 // Servo index starts with 0 for M280 command
+#define NUM_SERVOS 1
 
 // Delay (in milliseconds) before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
